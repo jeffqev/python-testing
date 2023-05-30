@@ -77,3 +77,15 @@ def test_liquidation_raise_an_exception_when_there_are_not_months_worked(mocker:
         payroll.calculate_liquidation(employee_id, salary)
         
         get_employee_data.assert_called_once_with(employee_id)
+
+def test_get_employee_data_returns_the_employee_data(mocker: MockFixture, employee_factory: typing):
+    employee_id = 1
+    expected_employee_data = employee_factory(id=employee_id, name="John Doe")
+    get = mocker.patch('app.requests.get')
+    get.return_value.json.return_value = expected_employee_data
+    payroll = Payroll()
+
+    actual_employee_data = payroll.get_employee_data(employee_id)
+
+    assert actual_employee_data == expected_employee_data
+    get.assert_called_once_with(f"https://api.example.com/salary/{employee_id}")

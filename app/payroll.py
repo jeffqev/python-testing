@@ -1,7 +1,7 @@
 import requests
 
 from .calculator import Calculator
-
+from .employee import Employee
 class Payroll:
     def calculate_salary(self, salary, bonus, taxes):
         calculator = Calculator()
@@ -18,7 +18,9 @@ class Payroll:
         return calculator.add(salary, salary * months_worked)
                    
     def get_employee_data(self, employee_id: int):
-
         response = requests.get(f"https://api.example.com/salary/{employee_id}")
         return response.json()
     
+    def get_employee(self, employee_id: int):
+        response = requests.get(f"https://api.example.com/employee/{employee_id}")
+        return Employee(**response.json())
