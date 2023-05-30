@@ -3,11 +3,14 @@ from pytest_mock import MockFixture
 
 from app import Calculator
 
-def test_addition_returns_the_correct_result_when_two_number_are_passed():
+@pytest.mark.parametrize("number_1, number_2, expected_result", [
+    (1, 1, 2),
+    (2, 2, 4),
+    (3, 3, 6),
+    (4, 4, 8),
+])
+def test_addition_returns_the_correct_result_when_two_number_are_passed(number_1, number_2, expected_result ):
     #Arrange
-    number_1 = 1
-    number_2 = 1
-    expected_result = 2
     calculator = Calculator()
 
     #Act
