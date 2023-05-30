@@ -2,3 +2,4 @@ pytest
 faker
 pytest-mock
 pydantic
+requests
