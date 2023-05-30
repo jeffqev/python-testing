@@ -9,17 +9,18 @@ from app.calculator import Calculator
 
 @pytest.fixture(name='salary_information')
 def _salary_information(faker: Faker):
-    salary = faker.pyint()
-    bonus = faker.pyint()
+    def _factory(salary, bonus):
+        salary = salary or faker.pyint()
+        bonus = bonus or faker.pyint()
+        return {
+            'salary': salary,
+            'bonus': bonus,
+            'taxes': salary + bonus,
+        }
+    return _factory
 
-    return {
-        'salary': salary,
-        'bonus': bonus,
-        'taxes': salary + bonus,
-    }
-
-def test_calculate_salary_calculate_the_salary_when_data_is_correct(salary_information: typing.Dict): 
-    _salary_information = salary_information
+def test_calculate_salary_calculate_the_salary_when_data_is_correct(salary_information: typing.Callable): 
+    _salary_information = salary_information(None, None)
     expected_salary = (_salary_information['salary'] + _salary_information['bonus']) / _salary_information['taxes']
     payroll = Payroll()
 
@@ -33,9 +34,10 @@ def test_calculate_salary_calculate_the_salary_when_data_is_correct(salary_infor
 
 
 def test_calculate_salary_calls_the_calculator_functions(mocker: MockFixture, salary_information: typing.Dict): 
-    salary = salary_information['salary']
-    bonus = salary_information['bonus']
-    taxes = salary_information['taxes']
+    _salary_information = salary_information(10, 17)
+    salary = _salary_information['salary']
+    bonus = _salary_information['bonus']
+    taxes = _salary_information['taxes']
     expected_salary = (salary + bonus) / taxes
     add = mocker.patch('app.calculator.Calculator.add')
     add.return_value = salary + bonus
