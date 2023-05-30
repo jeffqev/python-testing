@@ -1,0 +1,4 @@
+pytest
+faker
+pytest-mock
+pydantic
