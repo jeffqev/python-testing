@@ -1,18 +1,23 @@
 import pytest
 import typing
 
+from faker import Faker
 from pytest_mock import MockFixture
 
 from app import Payroll
 from app.calculator import Calculator
 
 @pytest.fixture(name='salary_information')
-def _salary_information():
+def _salary_information(faker: Faker):
+    salary = faker.pyint()
+    bonus = faker.pyint()
+
     return {
-        'salary': 1000,
-        'bonus': 100,
-        'taxes': 2,
+        'salary': salary,
+        'bonus': bonus,
+        'taxes': salary + bonus,
     }
+
 def test_calculate_salary_calculate_the_salary_when_data_is_correct(salary_information: typing.Dict): 
     _salary_information = salary_information
     expected_salary = (_salary_information['salary'] + _salary_information['bonus']) / _salary_information['taxes']
