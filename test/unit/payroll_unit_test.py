@@ -1,25 +1,36 @@
 import pytest
+import typing
+
 from pytest_mock import MockFixture
 
 from app import Payroll
 from app.calculator import Calculator
 
-def test_calculate_salary_calculate_the_salary_when_data_is_correct(): 
-    salary = 1000
-    bonus = 100
-    taxes = 2
-    expected_salary = (salary + bonus) / taxes
+@pytest.fixture(name='salary_information')
+def _salary_information():
+    return {
+        'salary': 1000,
+        'bonus': 100,
+        'taxes': 2,
+    }
+def test_calculate_salary_calculate_the_salary_when_data_is_correct(salary_information: typing.Dict): 
+    _salary_information = salary_information
+    expected_salary = (_salary_information['salary'] + _salary_information['bonus']) / _salary_information['taxes']
     payroll = Payroll()
 
-    actual_salary = payroll.calculate_salary(salary, bonus, taxes)
+    actual_salary = payroll.calculate_salary(
+        _salary_information['salary'], 
+        _salary_information['bonus'], 
+        _salary_information['taxes']
+    )
     
     assert actual_salary == expected_salary
 
 
-def test_calculate_salary_calls_the_calculator_functions(mocker: MockFixture): 
-    salary = 1000
-    bonus = 100
-    taxes = 2
+def test_calculate_salary_calls_the_calculator_functions(mocker: MockFixture, salary_information: typing.Dict): 
+    salary = salary_information['salary']
+    bonus = salary_information['bonus']
+    taxes = salary_information['taxes']
     expected_salary = (salary + bonus) / taxes
     add = mocker.patch('app.calculator.Calculator.add')
     add.return_value = salary + bonus
