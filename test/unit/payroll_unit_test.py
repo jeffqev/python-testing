@@ -1,3 +1,4 @@
+import pytest
 from pytest_mock import MockFixture
 
 from app import Payroll
@@ -45,3 +46,16 @@ def test_liquidation_returns_correct_liquidation(mocker: MockFixture):
 
     assert liquidation_result == expected_liquidation
     get_employee_data.assert_called_once_with(employee_id)
+
+def test_liquidation_raise_an_exception_when_there_are_not_months_worked(mocker: MockFixture):
+    employee_id = 1
+    salary = 1000
+    mock_employee_data = {}
+    get_employee_data = mocker.patch('app.Payroll.get_employee_data')
+    get_employee_data.return_value = mock_employee_data
+    payroll = Payroll()
+
+    with pytest.raises(KeyError):
+        payroll.calculate_liquidation(employee_id, salary)
+        
+        get_employee_data.assert_called_once_with(employee_id)
